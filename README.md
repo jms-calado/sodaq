@@ -26,6 +26,7 @@
   In Arduino IDE, open the "teste_MQTT_GPS.ino" file, located in the extracted zip
 
   In ```MQTT_USERNAME    "username"``` change ```username``` to the correct username
+
   In ```MQTT_KEY         "password"``` change ```password``` to the correct password
 
   In ```deviceId = "PS99";``` change ```PS99``` to the correct label
