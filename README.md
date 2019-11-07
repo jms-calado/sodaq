@@ -8,7 +8,7 @@
 
     Open Arduino IDE
 
-    In File->Preferences->'Aditional Boards Manager URLs:' paste http://downloads.sodaq.net/package_sodaq_samd_index.json and click 'ok'
+    In File->Preferences->'Aditional Boards Manager URLs:' paste ```http://downloads.sodaq.net/package_sodaq_samd_index.json``` and click 'ok'
 
     In Tools->Board->Boards Manager filter for "Sodaq" and install the only package ("SODAQ SAMD Boards by Sodaq") - Version 1.6.19
 
@@ -25,7 +25,10 @@
 
     In Arduino IDE, open the "teste_MQTT_GPS.ino" file, located in the extracted zip
 
-    Change deviceId = "PS99"; to the correct label
+    In ```MQTT_USERNAME    "username"``` change ```username``` to the correct username
+    In ```MQTT_KEY         "password"``` change ```password``` to the correct password
+
+    In ```deviceId = "PS99";``` change ```PS99``` to the correct label
 
     In Tools->Board: scroll down and select "Sodaq SFF"
 

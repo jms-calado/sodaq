@@ -15,6 +15,8 @@
 #define CURRENT_URAT     "8" //NB-IOT
 #define MQTT_SERVER_IP   "87.44.18.29" //mqtt.staging.carelink.tssg.org
 #define MQTT_SERVER_PORT 1883
+#define MQTT_USERNAME    "username"
+#define MQTT_KEY         "password"
 
 String deviceId = "PS99";
 
@@ -72,7 +74,7 @@ void setup() {
   
   if (isReady) {
       do_flash_led(LED_GREEN);
-      MQTTisReady = r4x.mqttSetServerIP(MQTT_SERVER_IP, MQTT_SERVER_PORT) && r4x.mqttLogin();//r4x.mqttSetAuth(MQTT_USERNAME, MQTT_KEY)
+      MQTTisReady = r4x.mqttSetServerIP(MQTT_SERVER_IP, MQTT_SERVER_PORT) && r4x.mqttSetAuth(MQTT_USERNAME, MQTT_KEY) && r4x.mqttLogin();//r4x.mqttSetAuth(MQTT_USERNAME, MQTT_KEY)
       CONSOLE_STREAM.println(MQTTisReady ? "MQTT connected" : "MQTT failed");
    }
 
@@ -209,7 +211,7 @@ void find_fix(uint32_t delay_until) {
        CONSOLE_STREAM.println(String(" lon = ") + String(sodaq_gps.getLon(), 7));
        CONSOLE_STREAM.println(String(" alt = ") + String(sodaq_gps.getAlt(), 7));
        CONSOLE_STREAM.println(String(" num sats = ") + String(sodaq_gps.getNumberOfSatellites()));
-       String input = "{\"timestamp\":\"" + formatDateTime(sodaq_gps.getYear(), sodaq_gps.getMonth(), sodaq_gps.getDay(), sodaq_gps.getHour(), sodaq_gps.getMinute(), sodaq_gps.getSecond()) + "\",\"location\": {\"lat\":" + sodaq_gps.getLat() + ",\"lon\":" + sodaq_gps.getLon() + ",\"alt\":" + sodaq_gps.getAlt() + ",\"batteryLevel\":" + getBatteryVoltage() + "}}";
+       String input = "{\"timestamp\":\"" + formatDateTime(sodaq_gps.getYear(), sodaq_gps.getMonth(), sodaq_gps.getDay(), sodaq_gps.getHour(), sodaq_gps.getMinute(), sodaq_gps.getSecond()) + "\",\"location\": {\"lat\":" + String(sodaq_gps.getLat(), 7) + ",\"lon\":" + String(sodaq_gps.getLon(), 7) + ",\"alt\":" + String(sodaq_gps.getAlt(), 7) + ",\"batteryLevel\":" + getBatteryVoltage() + "}}";
        isActive = publishLocation(input);
        
     } else {
@@ -296,7 +298,7 @@ void processSubscribeMessage(char topic[], char buffer[], boolean isNormal) {
     String topicAux = deviceId + "/active";
     
     if(strcmp(topic,topicAux.c_str()) == 0) {
-        CONSOLE_STREAM.println("Found message of topic Sodaq_Sara/active");
+        CONSOLE_STREAM.println("Found message of topic /active");
         //CONSOLE_STREAM.println(buffer);
         //CONSOLE_STREAM.println(strlen(buffer)-2);
         if(isNormal) {
@@ -314,7 +316,7 @@ void processSubscribeMessage(char topic[], char buffer[], boolean isNormal) {
         CONSOLE_STREAM.println(isActive);
     }
     else {
-      CONSOLE_STREAM.println("Found message of topic Sodaq_Sara/energyProfile");
+      CONSOLE_STREAM.println("Found message of topic /energyProfile");
       // Deserialize the JSON document
       DeserializationError error = deserializeJson(doc, buffer);
       // Test if parsing succeeds.
