@@ -211,12 +211,12 @@ void find_fix(uint32_t delay_until) {
        CONSOLE_STREAM.println(String(" lon = ") + String(sodaq_gps.getLon(), 7));
        CONSOLE_STREAM.println(String(" alt = ") + String(sodaq_gps.getAlt(), 7));
        CONSOLE_STREAM.println(String(" num sats = ") + String(sodaq_gps.getNumberOfSatellites()));
-       String input = "{\"timestamp\":\"" + formatDateTime(sodaq_gps.getYear(), sodaq_gps.getMonth(), sodaq_gps.getDay(), sodaq_gps.getHour(), sodaq_gps.getMinute(), sodaq_gps.getSecond()) + "\",\"location\": {\"lat\":" + String(sodaq_gps.getLat(), 7) + ",\"lon\":" + String(sodaq_gps.getLon(), 7) + ",\"alt\":" + String(sodaq_gps.getAlt(), 7) + ",\"batteryLevel\":" + getBatteryVoltage() + "}}";
+       String input = "{\"timestamp\":\"" + formatDateTime(sodaq_gps.getYear(), sodaq_gps.getMonth(), sodaq_gps.getDay(), sodaq_gps.getHour(), sodaq_gps.getMinute(), sodaq_gps.getSecond()) + "\",\"location\": {\"lat\":" + String(sodaq_gps.getLat(), 7) + ",\"lon\":" + String(sodaq_gps.getLon(), 7) + ",\"alt\":" + String(sodaq_gps.getAlt(), 7) + ",\"batteryLevel\":" + String(getBatteryVoltage() * 0.001, 3) + "}}";
        isActive = publishLocation(input);
        
     } else {
        CONSOLE_STREAM.println("No Fix");
-        String input = "{\"timestamp\":\"" +  formatDateTime(1970, 01, 01, 00, 00, 00) + "\",\"location\": {\"lat\":" +  0 + ",\"lon\":" + 0 + ",\"alt\":" +  0 + ",\"batteryLevel\":" +  getBatteryVoltage() + "}}";
+       String input = "{\"timestamp\":\"" +  formatDateTime(1970, 01, 01, 00, 00, 00) + "\",\"location\": {\"lat\":" +  0 + ",\"lon\":" + 0 + ",\"alt\":" +  0 + ",\"batteryLevel\":" +  String(getBatteryVoltage() * 0.001, 3) + "}}";
        isActive = publishLocation(input);
        do_flash_led(LED_RED);
     }
