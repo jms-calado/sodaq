@@ -82,13 +82,13 @@ void setup() {
       do_flash_led(LED_GREEN);
       String topic = deviceId + "/active";
       bool isSubscribed = r4x.mqttSubscribe(topic.c_str());
-      CONSOLE_STREAM.println(isSubscribed ? "Subscribed to active" : "Fail to subscribe");
+      CONSOLE_STREAM.println(isSubscribed ? "Subscribed to active" : "Fail to subscribe to active");
       delay(1000);
-   }
   
-    String topic = deviceId + "/configuration/energyProfile";
-    bool response = r4x.mqttSubscribe(topic.c_str());
-    CONSOLE_STREAM.println(response ? "Subscribed to energyProfile" : "Fail to subscribe");
+      topic = deviceId + "/configuration/energyProfile";
+      bool response = r4x.mqttSubscribe(topic.c_str());
+      CONSOLE_STREAM.println(response ? "Subscribed to energyProfile" : "Fail to subscribe to energyProfile");
+   }
 }
 
 /*******************************************************************************************    LOOP    *****************************************************************/
@@ -101,26 +101,41 @@ void loop() {
     CONSOLE_STREAM.println(isReady ? "Network connected" : "Network connection failed");//fazer tratamento dos erros
   }
   else {
-    CONSOLE_STREAM.println(isActive ? "Funcionamento normal" : "Ainda não está active");//fazer tratamento dos erros
-    if(isActive) {
-      if(cycleCheck(&publishLastMillis, publishCycle)) {
-         do_flash_led(LED_BLUE);
-         find_fix(5000);
-         publishState = !publishState;
+    if (!MQTTisReady) {
+      MQTTisReady = r4x.mqttSetServerIP(MQTT_SERVER_IP, MQTT_SERVER_PORT) && r4x.mqttSetAuth(MQTT_USERNAME, MQTT_KEY) && r4x.mqttLogin();//r4x.mqttSetAuth(MQTT_USERNAME, MQTT_KEY)
+      CONSOLE_STREAM.println(MQTTisReady ? "MQTT connected" : "MQTT failed");
+      delay(5000);
+      if (MQTTisReady) {
+        String topic = deviceId + "/active";
+        bool isSubscribed = r4x.mqttSubscribe(topic.c_str());
+        CONSOLE_STREAM.println(isSubscribed ? "Subscribed to active" : "Fail to subscribe to active");
+        delay(1000);
+        bool response = r4x.mqttSubscribe(topic.c_str());
+        CONSOLE_STREAM.println(response ? "Subscribed to energyProfile" : "Fail to subscribe to energyProfile");
       }
-      if(cycleCheck(&subscribeLastMillis, subscribeCycle)) {
-         do_flash_led(LED_GREEN);
-         receiveSubscribedTopicsMessages();
-         subscribeState = !subscribeState;
-      }
-      //receiveSubscribedTopicsMessages();
-      //do_flash_led(LED_BLUE);
-      //find_fix(5000);
     }
     else {
-      delay(5000);
-      do_flash_led(LED_GREEN);
-      receiveSubscribedTopicsMessages();
+      CONSOLE_STREAM.println(isActive ? "Normal operation" : "Awaiting mqtt activation");//fazer tratamento dos erros
+      if(isActive) {
+        if(cycleCheck(&publishLastMillis, publishCycle)) {
+           do_flash_led(LED_BLUE);
+           find_fix(5000);
+           publishState = !publishState;
+        }
+        if(cycleCheck(&subscribeLastMillis, subscribeCycle)) {
+           do_flash_led(LED_GREEN);
+           receiveSubscribedTopicsMessages();
+           subscribeState = !subscribeState;
+        }
+        //receiveSubscribedTopicsMessages();
+        //do_flash_led(LED_BLUE);
+        //find_fix(5000);
+      }
+      else {
+        delay(5000);
+        do_flash_led(LED_GREEN);
+        receiveSubscribedTopicsMessages();
+      }
     }
   }
   delay(1000);
